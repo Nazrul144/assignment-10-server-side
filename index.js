@@ -28,8 +28,16 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
   
     const materialCollection = client.db('materialDB').collection('material')
+
+
+    //Data read:
+    app.get('/material', async(req, res)=>{
+      const cursor = materialCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
   
-    app.post('/data', async(req, res)=>{
+    app.post('/material', async(req, res)=>{
       const newMaterial = req.body
       console.log(newMaterial);
       const result = await materialCollection.insertOne(newMaterial)
@@ -44,8 +52,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
 
 
 
