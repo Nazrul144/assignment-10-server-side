@@ -28,6 +28,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
   
     const materialCollection = client.db('materialDB').collection('material')
+    const categoryCollection = client.db('materialDB').collection('category')
+
 
 
     //Data read:
@@ -36,6 +38,13 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
+
+    app.get('/category', async(req, res)=>{
+      const cursor = categoryCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+      console.log(result);
+    })
   
     app.post('/material', async(req, res)=>{
       const newMaterial = req.body
@@ -43,6 +52,8 @@ async function run() {
       const result = await materialCollection.insertOne(newMaterial)
       res.send(result);
     })
+
+   
 
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
