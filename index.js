@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
 require('dotenv').config()
 const cors = require('cors');
 const app = express()
@@ -32,10 +32,25 @@ async function run() {
 
 
 
-    //Data read:
+    //Data read, write, update, delete:
+
+
+    app.post('/material', async(req,res)=>{
+      const newMaterial = req.body;
+      console.log(newMaterial);
+      const result = materialCollection.insertOne(newMaterial)
+      res.send(result)
+    })
+
     app.get('/material', async(req, res)=>{
       const cursor = materialCollection.find()
       const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get('/myMaterial/:email', async(req, res) =>{
+      console.log(req.params.email);
+      const result = await materialCollection.find({email: req.params.email}).toArray()
       res.send(result)
     })
 
@@ -43,14 +58,16 @@ async function run() {
       const cursor = categoryCollection.find()
       const result = await cursor.toArray()
       res.send(result)
-      console.log(result);
+   
     })
+
   
-    app.post('/material', async(req, res)=>{
-      const newMaterial = req.body
-      console.log(newMaterial);
-      const result = await materialCollection.insertOne(newMaterial)
-      res.send(result);
+    app.get('/material/:id', async(req, res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await materialCollection.findOne(query)
+      res.send(result)
+     
     })
 
    
