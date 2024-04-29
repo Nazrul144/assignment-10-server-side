@@ -38,8 +38,10 @@ async function run() {
     app.post('/material', async(req,res)=>{
       const newMaterial = req.body;
       console.log(newMaterial);
-      const result = materialCollection.insertOne(newMaterial)
+      const result = await materialCollection.insertOne(newMaterial)
+      console.log(result)
       res.send(result)
+
     })
 
     app.get('/material', async(req, res)=>{
