@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const cors = require('cors');
 const app = express()
@@ -26,16 +26,14 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-  
+
     const materialCollection = client.db('materialDB').collection('material')
     const categoryCollection = client.db('materialDB').collection('category')
 
 
 
     //Data read, write, update, delete:
-
-
-    app.post('/material', async(req,res)=>{
+    app.post('/material', async (req, res) => {
       const newMaterial = req.body;
       console.log(newMaterial);
       const result = await materialCollection.insertOne(newMaterial)
@@ -44,35 +42,71 @@ async function run() {
 
     })
 
-    app.get('/material', async(req, res)=>{
+    app.get('/material', async (req, res) => {
       const cursor = materialCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/myMaterial/:email', async(req, res) =>{
+    app.get('/myMaterial/:email', async (req, res) => {
       console.log(req.params.email);
-      const result = await materialCollection.find({email: req.params.email}).toArray()
+      const result = await materialCollection.find({ email: req.params.email }).toArray()
       res.send(result)
     })
 
-    app.get('/category', async(req, res)=>{
+    app.get('/category', async (req, res) => {
       const cursor = categoryCollection.find()
       const result = await cursor.toArray()
       res.send(result)
-   
+
     })
 
-  
-    app.get('/material/:id', async(req, res)=>{
+
+    app.get('/material/:id', async (req, res) => {
       const id = req.params.id
-      const query = {_id : new ObjectId(id)}
+      console.log({id})
+      const query = { _id: new ObjectId(id) }
       const result = await materialCollection.findOne(query)
       res.send(result)
-     
+
     })
 
-   
+    //Update:
+    app.put('/material/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updateMaterial = req.body
+      const material = {
+        $set: {
+          productName: updateMaterial.productName,
+          photo: updateMaterial.photo,
+          price: updateMaterial.price,
+          rating: updateMaterial.rating,
+          customization: updateMaterial.customization,
+          stockStatus: updateMaterial.stockStatus,
+          subcategory: updateMaterial.subcategory,
+          stockStatus: updateMaterial.stockStatus,
+          username: updateMaterial.username,
+          email: updateMaterial.email,
+          description: updateMaterial.description
+        }
+      }
+      const result = await materialCollection.updateOne(filter, material, options)
+      res.send(result)
+    })
+
+
+    //Delete
+    app.delete('/material/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await materialCollection.deleteOne(query)
+      res.send(result);
+    })
+
+
 
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -86,12 +120,12 @@ run().catch(console.dir);
 
 
 //Routing code:
-app.get('/', (req, res)=>{
-    res.send('Tourist server is ok!')
+app.get('/', (req, res) => {
+  res.send('Tourist server is ok!')
 })
 
 
 
-app.listen(port, (req, res)=>{
-    console.log(`Server running at the port${port}`);
+app.listen(port, (req, res) => {
+  console.log(`Server running at the port${port}`);
 })
